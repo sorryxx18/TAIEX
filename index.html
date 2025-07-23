@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>台股每日市場情報儀表板 - 2025/07/23</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #F8F9FA;
+        }
+        .card {
+            background-color: #FFFFFF;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            padding: 1.5rem;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 250px;
+            width: 100%;
+            max-width: 600px;
+        }
+        .gradient-text {
+            background: linear-gradient(90deg, #1D4ED8, #7C3AED);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+
+        <header class="text-center mb-8 md:mb-12">
+            <h1 class="text-3xl md:text-5xl font-bold text-gray-900 mb-2">TAIEX 每日市場情報</h1>
+            <p class="text-lg md:text-xl text-gray-500">報告日期: 2025/07/23 (週三結算日)</p>
+        </header>
+
+        <main class="space-y-8 md:space-y-12">
+
+            <!-- Section 1: The Big Picture -->
+            <section id="overview">
+                <h2 class="text-2xl font-bold mb-6 text-center">今日市場總覽</h2>
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+                    
+                    <div class="card md:col-span-2 flex flex-col items-center justify-center text-center">
+                        <h3 class="text-xl font-bold mb-2">市場健康度</h3>
+                        <div class="w-48 h-48">
+                            <canvas id="marketHealthChart"></canvas>
+                        </div>
+                        <p class="mt-2 text-gray-500">綜合評分顯示市場處於高度緊張與不健康狀態，多空激烈衝突。</p>
+                    </div>
+
+                    <div class="card md:col-span-3 flex flex-col justify-center">
+                        <h3 class="text-xl font-bold mb-4 text-center">今日大盤預測</h3>
+                        <div class="text-center mb-4">
+                             <p class="text-lg font-semibold text-gray-600">結算日多空角力，區間劇烈震盪</p>
+                        </div>
+                        <div class="flex justify-around items-center text-center">
+                            <div>
+                                <p class="text-sm text-gray-500">預估下檔支撐</p>
+                                <p class="text-2xl lg:text-3xl font-bold text-green-600">22,800</p>
+                            </div>
+                            <div class="text-2xl font-light text-gray-400">～</div>
+                            <div>
+                                <p class="text-sm text-gray-500">預估上檔壓力</p>
+                                <p class="text-2xl lg:text-3xl font-bold text-red-600">23,150</p>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-200 text-sm text-gray-600">
+                           <p><strong>結算觀察：</strong>法人期貨龐大空單帶來<strong class="text-red-600">「壓低結算」</strong>動機，任何反彈都可能面臨賣壓。</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 2: The Battleground -->
+            <section id="battleground">
+                <h2 class="text-2xl font-bold mb-6 text-center">多空戰場分析</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    
+                    <div class="card">
+                        <h3 class="text-xl font-bold mb-4">核心矛盾：散戶恐慌 vs 法人佈局</h3>
+                        <p class="text-sm text-gray-500 mb-4">昨日指數因關稅傳聞重挫，但外資卻反向大買。此現象揭示了市場的巨大預期落差，即「散戶賣，法人買」。</p>
+                        <div class="chart-container h-64">
+                            <canvas id="institutionalFlowsChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 class="text-xl font-bold mb-4">技術面警訊</h3>
+                        <p class="text-sm text-gray-500 mb-4">昨日收出「帶量下殺長黑K」，為強烈空頭反轉訊號，並已跌破5日線。下個關鍵支撐為20日線。</p>
+                        <div class="chart-container h-64">
+                            <canvas id="supportPressureChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 class="text-xl font-bold mb-4">國際市場逆風</h3>
+                        <p class="text-sm text-gray-500 mb-4">美國科技股疲軟，特別是費半指數成分股重挫，對台股半導體鏈構成直接壓力。黃金上漲反映全球避險情緒升溫。</p>
+                        <ul class="space-y-2 text-base">
+                            <li class="flex justify-between items-center"><span>那斯達克 (IXIC)</span><span class="font-bold text-red-600">▼ 0.4%</span></li>
+                            <li class="flex justify-between items-center"><span>費城半導體 (SOX 指標股)</span><span class="font-bold text-red-600">▼ 2.5-3.3%</span></li>
+                            <li class="flex justify-between items-center"><span>黃金 (Gold)</span><span class="font-bold text-green-600">▲ 1.0%</span></li>
+                            <li class="flex justify-between items-center"><span>原油 (WTI)</span><span class="font-bold text-red-600">▼ 1.3%</span></li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <h3 class="text-xl font-bold mb-4">衍生性商品訊號</h3>
+                         <p class="text-sm text-gray-500 mb-4">選擇權PCR透露市場超賣（逆勢偏多），但法人龐大的期貨空單部位，為結算日帶來強烈的下壓力量。</p>
+                        <div class="grid grid-cols-2 gap-4 text-center">
+                            <div>
+                                <p class="text-sm text-gray-500">選擇權 P/C Ratio</p>
+                                <p class="text-3xl font-bold text-green-600">91.56%</p>
+                                <p class="text-xs text-gray-400">逆勢偏多訊號</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">外資期貨淨部位</p>
+                                <p class="text-3xl font-bold text-red-600">-46萬口</p>
+                                <p class="text-xs text-gray-400">強烈避險/下壓</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 3: Actionable Strategy -->
+            <section id="strategy">
+                <h2 class="text-2xl font-bold mb-6 text-center">🚩 今日操作策略：順勢追擊</h2>
+                <div class="card max-w-4xl mx-auto">
+                    <p class="text-center text-gray-600 mb-6">基於法人「買現貨、空期貨」的策略分歧，最佳應對是跟隨「聰明錢」流入的個股，即法人在恐慌中積極佈局的標的。本策略聚焦於具備明確法人買盤與正面題材的個股。</p>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-4 py-3">股票</th>
+                                    <th scope="col" class="px-4 py-3">主題族群</th>
+                                    <th scope="col" class="px-4 py-3 hidden md:table-cell">籌碼穩定性</th>
+                                    <th scope="col" class="px-4 py-3">理由簡述</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b">
+                                    <td class="px-4 py-4 font-medium">2330 台積電</td>
+                                    <td class="px-4 py-4">半導體</td>
+                                    <td class="px-4 py-4 hidden md:table-cell"><span class="text-green-600 font-semibold">Positive</span></td>
+                                    <td class="px-4 py-4">外資恐慌中大買+4,360張，核心戰略持股。</td>
+                                </tr>
+                                <tr class="border-b">
+                                    <td class="px-4 py-4 font-medium">2454 聯發科</td>
+                                    <td class="px-4 py-4">IC設計</td>
+                                    <td class="px-4 py-4 hidden md:table-cell"><span class="text-green-600 font-semibold">Positive</span></td>
+                                    <td class="px-4 py-4">外資逆勢強力買超+2,588張，法說會前信心足。</td>
+                                </tr>
+                                <tr class="border-b">
+                                    <td class="px-4 py-4 font-medium">2317 鴻海</td>
+                                    <td class="px-4 py-4">EMS/AI伺服器</td>
+                                    <td class="px-4 py-4 hidden md:table-cell"><span class="text-blue-600 font-semibold">Strongly Positive</span></td>
+                                    <td class="px-4 py-4">三大法人同步買超，籌碼高度集中。</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-4 font-medium">2371 大同</td>
+                                    <td class="px-4 py-4">重電/資產</td>
+                                    <td class="px-4 py-4 hidden md:table-cell"><span class="text-yellow-600 font-semibold">Neutral</span></td>
+                                    <td class="px-4 py-4">今日法說會題材，具正面催化劑潛力。</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center text-gray-500 text-xs mt-8 md:mt-12 pt-8 border-t">
+            <p>資料擷取與報告產生時間: 2025/07/23 07:28:15</p>
+            <p class="mt-1">本資訊由自動化系統生成，僅供市場分析參考，不構成任何投資建議。</p>
+        </footer>
+
+    </div>
+
+    <script>
+        const chartTooltipConfig = {
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        title: function(tooltipItems) {
+                            const item = tooltipItems[0];
+                            let label = item.chart.data.labels[item.dataIndex];
+                            if (Array.isArray(label)) {
+                              return label.join(' ');
+                            }
+                            return label;
+                        }
+                    }
+                }
+            }
+        };
+
+        const wrapLabels = (labels, maxLength) => {
+            return labels.map(label => {
+                if (label.length <= maxLength) {
+                    return label;
+                }
+                const words = label.split(' ');
+                const lines = [];
+                let currentLine = '';
+                words.forEach(word => {
+                    if ((currentLine + word).length > maxLength) {
+                        lines.push(currentLine.trim());
+                        currentLine = '';
+                    }
+                    currentLine += word + ' ';
+                });
+                lines.push(currentLine.trim());
+                return lines;
+            });
+        };
+
+        const marketHealthScore = 25;
+        const ctxMarketHealth = document.getElementById('marketHealthChart').getContext('2d');
+        new Chart(ctxMarketHealth, {
+            type: 'doughnut',
+            data: {
+                labels: ['健康度', '風險'],
+                datasets: [{
+                    data: [marketHealthScore, 100 - marketHealthScore],
+                    backgroundColor: ['#DC2626', '#E5E7EB'],
+                    borderColor: ['#FFFFFF'],
+                    borderWidth: 4,
+                    cutout: '70%',
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    ...chartTooltipConfig.plugins,
+                    legend: { display: false },
+                },
+            },
+            plugins: [{
+                id: 'doughnut-center-text',
+                beforeDraw: function(chart) {
+                    const ctx = chart.ctx;
+                    const {width, height} = chart.chartArea;
+                    ctx.save();
+                    ctx.font = `bold 36px ${getComputedStyle(document.body).fontFamily}`;
+                    ctx.fillStyle = '#DC2626';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(`${marketHealthScore}`, width / 2, height / 2);
+                    
+                    ctx.font = `500 14px ${getComputedStyle(document.body).fontFamily}`;
+                    ctx.fillStyle = '#6B7280';
+                    ctx.fillText('/ 100', width / 2, height / 2 + 25);
+                    ctx.restore();
+                }
+            }]
+        });
+
+        const ctxInstitutionalFlows = document.getElementById('institutionalFlowsChart').getContext('2d');
+        new Chart(ctxInstitutionalFlows, {
+            type: 'bar',
+            data: {
+                labels: ['外資', '自營商', '投信'],
+                datasets: [{
+                    label: '買賣超 (億元)',
+                    data: [100.24, 42.96, -26.66],
+                    backgroundColor: (context) => {
+                        const value = context.dataset.data[context.dataIndex];
+                        return value > 0 ? '#16A34A' : '#DC2626';
+                    },
+                    borderRadius: 4,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                scales: {
+                    x: {
+                        grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                        ticks: { color: '#4B5563' }
+                    },
+                    y: {
+                        grid: { display: false },
+                        ticks: { color: '#1F2937' }
+                    }
+                },
+                plugins: {
+                    ...chartTooltipConfig.plugins,
+                    legend: { display: false }
+                }
+            }
+        });
+
+        const ctxSupportPressure = document.getElementById('supportPressureChart').getContext('2d');
+        new Chart(ctxSupportPressure, {
+            type: 'line',
+            data: {
+                labels: ['前高', '5日線', '收盤', '20日線'],
+                datasets: [
+                    {
+                        label: '價位',
+                        data: [23487, 23180, 22987, 22300],
+                        borderColor: '#4338CA',
+                        backgroundColor: 'rgba(67, 56, 202, 0.1)',
+                        fill: false,
+                        tension: 0.1
+                    },
+                     {
+                        label: '壓力',
+                        data: [23487, 23180, null, null],
+                        borderColor: 'transparent',
+                        backgroundColor: 'rgba(220, 38, 38, 0.1)',
+                        pointRadius: 0,
+                        fill: '-1'
+                    },
+                    {
+                        label: '支撐',
+                        data: [null, null, 22987, 22300],
+                        borderColor: 'transparent',
+                        backgroundColor: 'rgba(22, 163, 74, 0.1)',
+                        pointRadius: 0,
+                        fill: 'end'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#4B5563' }
+                    },
+                    y: {
+                        grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                        ticks: { color: '#4B5563' }
+                    }
+                },
+                plugins: {
+                    ...chartTooltipConfig.plugins,
+                    legend: { display: false }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
